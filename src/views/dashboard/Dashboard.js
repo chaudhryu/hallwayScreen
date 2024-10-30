@@ -21,27 +21,23 @@ const Dashboard = () => {
   const slides = [
     {
       src: bryan,
-      title: 'Bryan M. Sastokas, Deputy Chief, Chief Information Technology Officer (CITO)',
+      title: 'Bryan M. Sastokas, Chief Information Technology Officer (CITO)',
       text: 'Deputy Chief, CITO, Bryan M. Sastokas leads Metros ITS organization, and is dedicated to helping customers and business stakeholders address today’s increasingly complex software and hardware infrastructure challenges.',
     },
-    {
-      src: medic,
-      title: 'Medik Ghazikhanian, ​Executive OfficerCenter of Excellence (CoE)',
-      text: 'The ITS CoE is composed of Governance, Program Management Office (PMO), ITS Training, ITS Communications, Geospatial Business Intelligence (GBI), and ITS Budget and Admin.  This department is headed by Medik Ghazikhanian.',
-    },
+   
     {
       src: pat,
-      title: 'Patrick Astredo, Executive Officer IT Business Applications',
+      title: 'Patrick Astredo, EO IT Business Applications',
       text: 'The IT Business Applications group is comprised of Transit Applications, Business Application Services, and Digital Strategy & Innovation, & Web App. With over 37 years of experience in the transit industry, Patrick encompasses the values of Metro as proven by his continued commitment to safety, service excellence, workforce development and fiscal responsibility.',
     },
     {
-      src: joeGiba,
-      title: 'Joe Giba, Executive Officer IT Operations & Service Delivery',
-      text: 'Some representative placeholder content for the fourth slideIT Operations and Service Delivery group is comprised of the Help Desk, Technician Services, IT Construction Activation, and Information Security. As an operations group we provide 24x7 response to all mission critical bus and rail systems.',
+      src: medic,
+      title: 'Medik Ghazikhanian, EO Center of Excellence (CoE)',
+      text: 'The ITS CoE is composed of Governance, Program Management Office (PMO), ITS Training, ITS Communications, Geospatial Business Intelligence (GBI), and ITS Budget and Admin.  This department is headed by Medik Ghazikhanian.',
     },
     {
       src: tee,
-      title: 'Vincent Tee, Executive Officer Enterprise Architecture & Technology Integration​​​​​​​​​​​​​​',
+      title: 'Vincent Tee, EO Enterprise Architecture & Technology Integration​​​​​​​​​​​​​​',
       text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management. Vincent has been with Metro ITS department for over 30 years.  He started his career at RTD Information Technology (IT) department as a programmer in client-server and mainframe technology. He has continually progressed through leading various areas of Information Technology (IT).',
     },
   ]
@@ -51,7 +47,7 @@ const Dashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length)
-    }, 5000) // Change slide every 3 seconds
+    }, 3000) // Change slide every 3 seconds
     return () => clearInterval(interval)
   }, [slides.length])
 
