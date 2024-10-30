@@ -5,37 +5,44 @@ import {
   CCardImage,
   CCardTitle,
   CCardText,
+  CCardFooter
 } from '@coreui/react'
 
 import puppy from 'src/assets/images/puppy.jpg'
 import bryan from 'src/assets/images/bryan2.jpg'
+import bryan2 from 'src/assets/images/bryan3.png'
+import medic from 'src/assets/images/medic.jpg'
+import pat from 'src/assets/images/pat.jpg'
+import joeGiba from 'src/assets/images/joeGiba.jpg'
+import tee from 'src/assets/images/tee.jpg'
+import metroLogo from 'src/assets/images/metroLogo.webp'
 
 const Dashboard = () => {
   const slides = [
     {
       src: bryan,
       title: 'Bryan M. Sastokas, Deputy Chief, Chief Information Technology Officer (CITO)',
-      text: 'Some representative placeholder content for the first slide.',
+      text: 'Deputy Chief, CITO, Bryan M. Sastokas leads Metros ITS organization, and is dedicated to helping customers and business stakeholders address today’s increasingly complex software and hardware infrastructure challenges.',
     },
     {
-      src: bryan,
+      src: medic,
       title: 'Medik Ghazikhanian, ​Executive OfficerCenter of Excellence (CoE)',
-      text: 'Some representative placeholder content for the second slide.',
+      text: 'The ITS CoE is composed of Governance, Program Management Office (PMO), ITS Training, ITS Communications, Geospatial Business Intelligence (GBI), and ITS Budget and Admin.  This department is headed by Medik Ghazikhanian.',
     },
     {
-      src: puppy,
+      src: pat,
       title: 'Patrick Astredo, Executive Officer IT Business Applications',
-      text: 'Some representative placeholder content for the third slide.',
+      text: 'The IT Business Applications group is comprised of Transit Applications, Business Application Services, and Digital Strategy & Innovation, & Web App. With over 37 years of experience in the transit industry, Patrick encompasses the values of Metro as proven by his continued commitment to safety, service excellence, workforce development and fiscal responsibility.',
     },
     {
-      src: puppy,
+      src: joeGiba,
       title: 'Joe Giba, Executive Officer IT Operations & Service Delivery',
-      text: 'Some representative placeholder content for the fourth slide.',
+      text: 'Some representative placeholder content for the fourth slideIT Operations and Service Delivery group is comprised of the Help Desk, Technician Services, IT Construction Activation, and Information Security. As an operations group we provide 24x7 response to all mission critical bus and rail systems.',
     },
     {
-      src: puppy,
+      src: tee,
       title: 'Vincent Tee, Executive Officer Enterprise Architecture & Technology Integration​​​​​​​​​​​​​​',
-      text: 'Some representative placeholder content for the fifth slide.',
+      text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management. Vincent has been with Metro ITS department for over 30 years.  He started his career at RTD Information Technology (IT) department as a programmer in client-server and mainframe technology. He has continually progressed through leading various areas of Information Technology (IT).',
     },
   ]
 
@@ -44,7 +51,7 @@ const Dashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length)
-    }, 3000) // Change slide every 3 seconds
+    }, 15000) // Change slide every 3 seconds
     return () => clearInterval(interval)
   }, [slides.length])
 
@@ -179,6 +186,10 @@ const Dashboard = () => {
             height: 150px;
             margin-bottom: 15px;
           }
+  .text-center {
+    font-weight: bold;
+    font-size: 1.5rem; 
+  }
         }
       `}</style>
 
@@ -191,12 +202,20 @@ const Dashboard = () => {
               className="carousel-image"
             />
             <CCardBody>
-              <CCardTitle>{slides[currentIndex].title}</CCardTitle>
-              <CCardText>{slides[currentIndex].text}</CCardText>
+              <CCardTitle className='text-center' style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>
+                {slides[currentIndex].title}
+              </CCardTitle>
+              <CCardText className='text-center' style={{ fontSize: '1.8rem' }}>
+                {slides[currentIndex].text}
+              </CCardText>
+              <img src={metroLogo} alt="Metro Logo" style={{ height: '100px', marginRight: '8px',    bottom: 0,  }} />
+
+
+
             </CCardBody>
           </CCard>
         </div>
-        <button
+    {/*   <button
           className="carousel-control-prev"
           onClick={prevSlide}
           aria-label="Previous Slide"
@@ -209,7 +228,7 @@ const Dashboard = () => {
           aria-label="Next Slide"
         >
           &#10095;
-        </button>
+        </button> */} 
         <div className="carousel-indicators">
           {slides.map((_, index) => (
             <span
