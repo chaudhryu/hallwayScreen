@@ -113,8 +113,8 @@ const Dashboard = () => {
 
         /* Circular Image */
         .carousel-image {
-          width: 300px;
-          height: 300px;
+          width: 400px;
+          height: 400px;
           border-radius: 50%;
           object-fit: cover;
           margin-bottom: 20px;
