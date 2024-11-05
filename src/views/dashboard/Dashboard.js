@@ -42,19 +42,22 @@ const Dashboard = () => {
     {
       src: map,
       text: 'Map',
-
     },
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    // Slide transition effect
-    const interval = setInterval(() => {
+    // Determine the delay based on the current slide
+    const isMapSlide = slides[currentIndex].text === 'Map';
+    const delay = isMapSlide ? 15000 : 7000; // 15 seconds for map, 10 seconds for others
+
+    const timeout = setTimeout(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-    }, 10000); // Change slide every 3 seconds
-    return () => clearInterval(interval);
-  }, [slides.length]);
+    }, delay);
+
+    return () => clearTimeout(timeout);
+  }, [currentIndex, slides]);
 
   return (
     <>
@@ -64,7 +67,6 @@ const Dashboard = () => {
           position: relative;
           width: 100%;
           margin: 0 auto;
-          overflow: hidden;
           height: 100vh;
         }
 
@@ -120,34 +122,6 @@ const Dashboard = () => {
           border-radius: 50%;
           object-fit: cover;
           margin-bottom: 20px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .carousel-card {
-            width: 90%;
-          }
-
-          .carousel-indicators {
-            bottom: 10px;
-          }
-
-          .indicator-dot {
-            width: 10px;
-            height: 10px;
-            margin: 0 4px;
-          }
-
-          .carousel-image {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 15px;
-          }
-
-          .text-center {
-            font-weight: bold;
-            font-size: 1.5rem;
-          }
         }
       `}</style>
 
