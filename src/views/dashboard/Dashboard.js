@@ -49,7 +49,7 @@ const Dashboard = () => {
   useEffect(() => {
     // Determine the delay based on the current slide
     const isMapSlide = slides[currentIndex].text === 'Map';
-    const delay = isMapSlide ? 15000 : 10000; // 15 seconds for map, 10 seconds for others
+    const delay = isMapSlide ? 20000 : 8000; // 15 seconds for map, 10 seconds for others
 
     const timeout = setTimeout(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
