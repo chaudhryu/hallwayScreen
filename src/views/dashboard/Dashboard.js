@@ -135,13 +135,13 @@ const Dashboard = () => {
               <CCardBody>
                 <CCardTitle
                   className="text-center"
-                  style={{ fontSize: '2.2rem', fontWeight: 'bold' }}
+                  style={{ fontSize: '2.8rem', fontWeight: 'bold' }}
                 >
                   {slides[currentIndex].title}
                 </CCardTitle>
                 <CCardText
                   className="text-center"
-                  style={{ fontSize: '1.8rem' }}
+                  style={{ fontSize: '2.1rem' }}
                 >
                   {slides[currentIndex].text}
                 </CCardText>
