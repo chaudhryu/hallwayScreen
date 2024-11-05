@@ -26,7 +26,7 @@ const Dashboard = () => {
     {
       src: pat,
       title: 'Patrick Astredo, EO IT Business Applications',
-      text: 'The IT Business Applications group is comprised of Transit Applications, Business Application Services, and Digital Strategy & Innovation, & Web App. With over 37 years of experience in the transit industry, Patrick encompasses the values of Metro as proven by his continued commitment to safety, service excellence, workforce development, and fiscal responsibility.',
+      text: 'The IT Business Applications group is comprised of Transit Applications, Business Application Services, and Digital Strategy & Innovation, & Web App. Patrick encompasses the values of Metro as proven by his continued commitment to exellence.',
     },
     {
       src: medic,
@@ -37,11 +37,7 @@ const Dashboard = () => {
       src: tee,
       title:
         'Vincent Tee, EO Enterprise Architecture & Technology Integration',
-      text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management. Vincent has been with Metro ITS department for over 30 years. He started his career at RTD Information Technology (IT) department as a programmer in client-server and mainframe technology. He has continually progressed through leading various areas of IT.',
-    },
-    {
-      src: map,
-      text: 'Map',
+      text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management.',
     },
   ];
 
@@ -50,7 +46,7 @@ const Dashboard = () => {
   useEffect(() => {
     // Determine the delay based on the current slide
     const isMapSlide = slides[currentIndex].text === 'Map';
-    const delay = isMapSlide ? 15000 : 7000; // 15 seconds for map, 10 seconds for others
+    const delay = isMapSlide ? 15000 : 70000; // 15 seconds for map, 10 seconds for others
 
     const timeout = setTimeout(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
@@ -122,6 +118,8 @@ const Dashboard = () => {
           border-radius: 50%;
           object-fit: cover;
           margin-bottom: 20px;
+                    overflow:hidden;
+
         }
       `}</style>
 
@@ -137,13 +135,13 @@ const Dashboard = () => {
               <CCardBody>
                 <CCardTitle
                   className="text-center"
-                  style={{ fontSize: '2.5rem', fontWeight: 'bold' }}
+                  style={{ fontSize: '1.5rem', fontWeight: 'bold' }}
                 >
                   {slides[currentIndex].title}
                 </CCardTitle>
                 <CCardText
                   className="text-center"
-                  style={{ fontSize: '1.8rem' }}
+                  style={{ fontSize: '1.2rem' }}
                 >
                   {slides[currentIndex].text}
                 </CCardText>
