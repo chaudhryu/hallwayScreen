@@ -39,9 +39,6 @@ const Dashboard = () => {
         'Vincent Tee, EO Enterprise Architecture & Technology Integration',
       text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management.',
     },
-    {
-      src: map,
-    },
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
