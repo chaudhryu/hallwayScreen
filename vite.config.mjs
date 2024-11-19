@@ -1,7 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'node:path'
-import autoprefixer from 'autoprefixer'
+// vite.config.js
+
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'node:path';
+import autoprefixer from 'autoprefixer';
 
 export default defineConfig(() => {
   return {
@@ -12,7 +14,7 @@ export default defineConfig(() => {
     css: {
       postcss: {
         plugins: [
-          autoprefixer({}), // add options if needed
+          autoprefixer({}), // Add options if needed
         ],
       },
       preprocessorOptions: {
@@ -47,8 +49,9 @@ export default defineConfig(() => {
     server: {
       port: 3000,
       proxy: {
-        // https://vitejs.dev/config/server-options.html
+        // Configure proxy settings here if needed
+        '/api': 'http://localhost:5000',
       },
     },
-  }
-})
+  };
+});
