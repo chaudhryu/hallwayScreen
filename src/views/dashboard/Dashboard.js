@@ -1,4 +1,3 @@
-// Dashboard.js
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -7,17 +6,20 @@ import {
   CCardImage,
   CCardTitle,
   CCardText,
+  CHeader,
+  CListGroup,
+  CListGroupItem,
 } from '@coreui/react';
-// Import your images
+// Import images
 import bryan from 'src/assets/images/bryan2.jpg';
 import pat from 'src/assets/images/pat.jpg';
 import medic from 'src/assets/images/medic.jpg';
 import tee from 'src/assets/images/tee.jpg';
 import metroLogo from 'src/assets/images/metroITSLogo.png';
-import map from 'src/assets/images/mapFixedTitle.png';
+import map from 'src/assets/images/redoneMap.png';
 
 const Dashboard = () => {
-  // Array of room IDs and their corresponding names
+  // Array of room IDs and their names
   const rooms = [
     { id: 94, name: 'East Wing (05-76)' },
     { id: 180, name: 'Huddle A (05-44)' },
@@ -29,23 +31,21 @@ const Dashboard = () => {
     { id: 140, name: 'West Wing (05-20)' },
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [bookings, setBookings] = useState({}); // Key: roomId, Value: array of bookings
+  const [currentIndex, setCurrentIndex] = useState(0);//keeps track of current slide
+  const [bookings, setBookings] = useState({}); //State to store the bookings for each room, keyed by room ID
 
-  // Function to fetch bookings for all rooms
+  // Fetches bookings from each room from the server
   const fetchBookings = async () => {
     try {
-      const startDateTime = new Date().toISOString().split('T')[0] + ' 00:00:00';
-      const endDateTime =
-        new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] +
-        ' 00:00:00';
+      const startDateTime = new Date().toISOString().split('T')[0] + ' 00:00:00'; //beginning of the day
+      const endDateTime = new Date().toISOString().split('T')[0] + ' 23:59:59';// end of the day
 
-      const allBookings = {};
+      const allBookings = {}; //object to store all the data.
 
-      for (const room of rooms) {
+      for (const room of rooms) { //Iterates over each room in the rooms array.
         const roomId = room.id;
 
-        // Make a request to your backend server
+        // Make a request to backend server
         const response = await fetch(
           `http://localhost:5001/api/bookings?startDateTime=${encodeURIComponent(
             startDateTime
@@ -60,17 +60,17 @@ const Dashboard = () => {
         }
 
         const data = await response.json();
-        const roomBookings = data.bookings || data; // Adjust based on actual response
+        const roomBookings = data.bookings || data; // Extracts the bookings from data object.
 
-        if (roomBookings && roomBookings.length > 0) {
-          allBookings[roomId] = roomBookings;
+        if (roomBookings && roomBookings.length > 0) { //Checks if there are bookings for the room
+          allBookings[roomId] = roomBookings; //stores the bookings for the current room in allBookings object. Uses roomId as the key and roomBookings as the value
           console.log(`Bookings for room ${roomId}:`, roomBookings);
         } else {
           console.log(`No bookings for room ${roomId}`);
         }
       }
 
-      setBookings(allBookings);
+      setBookings(allBookings); //Update Bookings object
     } catch (error) {
       console.error('Error fetching bookings:', error);
     }
@@ -78,15 +78,28 @@ const Dashboard = () => {
 
   // Fetch bookings initially and refresh every seven minutes
   useEffect(() => {
-    fetchBookings(); // Initial fetch
+    // Fetch bookings initially
+    fetchBookings();
 
-    const interval = setInterval(() => {
-      console.log('Refreshing bookings data...');
+    // Set interval to fetch bookings data every hour
+    const fetchInterval = setInterval(() => {
+      console.log('Fetching bookings data...');
       fetchBookings();
-    }, 420000); // Refresh every 7 minutes (420,000 ms)
+    }, 3600000); // 1 hour (3,600,000 ms)
 
-    return () => clearInterval(interval); // Cleanup on component unmount
+    // Set interval to refresh the page every 7 minutes
+    const refreshInterval = setInterval(() => {
+      console.log('Refreshing the page...');
+      window.location.reload();
+    }, 420000); // 7 minutes (420,000 ms)
+
+    // Cleanup on component unmount
+    return () => {
+      clearInterval(fetchInterval);
+      clearInterval(refreshInterval);
+    };
   }, []);
+
 
   // Define the slides array, including a slide for each room's bookings
   // Only include rooms that have bookings
@@ -99,6 +112,8 @@ const Dashboard = () => {
     }));
 
   const slides = [
+
+
     {
       src: bryan,
       title: 'Bryan M. Sastokas, Chief Information Technology Officer (CITO)',
@@ -116,12 +131,17 @@ const Dashboard = () => {
     },
     {
       src: tee,
-      title:
-        'Vincent Tee, EO Enterprise Architecture & Technology Integration',
+      title: 'Vincent Tee, EO Enterprise Architecture & Technology Integration',
       text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management.',
     },
     // Include the booking slides
     ...bookingSlides,
+    // Add the map as its own slide
+    {
+      src: map,
+      type: 'image',
+      text: 'Map',
+    },
   ];
 
   useEffect(() => {
@@ -195,6 +215,7 @@ const Dashboard = () => {
           flex-direction: column;
           align-items: center;
           justify-content: center;
+          position: relative;
         }
 
         /* Circular Image */
@@ -217,6 +238,13 @@ const Dashboard = () => {
         .bookings-list li {
           margin-bottom: 10px;
         }
+
+        /* Logo Positioning */
+        .logo-bottom-left {
+          position: absolute;
+          bottom: 20px;
+          left: 20px;
+        }
       `}</style>
 
       <div className="carousel-container">
@@ -225,12 +253,15 @@ const Dashboard = () => {
             // Render the bookings slide for the specific room
             <CCard className="carousel-card pt-4">
               <CCardBody>
-                <CCardTitle
-                  className="text-center"
-                  style={{ fontSize: '2.8rem', fontWeight: 'bold' }}
-                >
-                  {slides[currentIndex].title}
-                </CCardTitle>
+                <CHeader 
+                  style={{ marginBottom:'10px' }}>
+                  <CCardTitle
+                    className="text-center"
+                    style={{ fontSize: '2.8rem', fontWeight: 'bold', }}
+                  >
+                    {slides[currentIndex].title}
+                  </CCardTitle>
+                </CHeader>
                 <ul className="bookings-list">
                   {bookings[slides[currentIndex].roomId].map((booking) => {
                     const startTime = new Date(booking.timeFrom);
@@ -248,15 +279,44 @@ const Dashboard = () => {
                     };
 
                     return (
-                      <li key={booking.bookingID}>
-                        <strong>{booking.meetingTitle} - {booking.creatorName}</strong> <br />
-                        {formatTime(startTime)} - {formatTime(endTime)}
-                      </li>
+                      <div>
+                        <CListGroup>
+                          <li key={booking.bookingID}>
+                            <strong>{booking.meetingTitle} - {booking.creatorName}</strong> <br />
+                            {formatTime(startTime)} - {formatTime(endTime)}
+                          </li>
+                        </CListGroup>
+                      </div>
                     );
                   })}
                 </ul>
+                <img
+                  src={metroLogo}
+                  alt="Metro Logo"
+                  className="logo-bottom-left"
+                  style={{ height: '80px' }}
+                />
               </CCardBody>
             </CCard>
+          ) : slides[currentIndex].text === 'Map' ? (
+            <div>
+              <CHeader style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                <CCardTitle
+                  className="text-center"
+                  style={{ fontSize: '2.8rem', fontWeight: 'bold', alignItems: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}
+                >
+                  Map of 5th Floor
+                </CCardTitle>
+              </CHeader>
+              <img
+                src={slides[currentIndex].src}
+                alt="Map"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+              />
+            </div>
           ) : slides[currentIndex].title ? (
             // Render the regular slides
             <CCard className="carousel-card pt-4">
@@ -302,9 +362,8 @@ const Dashboard = () => {
           {slides.map((_, index) => (
             <span
               key={index}
-              className={`indicator-dot ${
-                currentIndex === index ? 'active' : ''
-              }`}
+              className={`indicator-dot ${currentIndex === index ? 'active' : ''
+                }`}
               onClick={() => setCurrentIndex(index)}
               aria-current={currentIndex === index ? 'true' : 'false'}
               aria-label={`Slide ${index + 1}`}
