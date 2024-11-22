@@ -37,9 +37,8 @@ app.get('/api/bookings', async (req, res) => {
 
     // Set default startDateTime to today at 5:00 AM if not provided
     if (!startDateTime) {
-      const today = new Date();
-      today.setHours(5, 0, 0, 0); // Set time to 5:00 AM
-      startDateTime = formatDateTime(today);
+      const now = new Date();
+      startDateTime = formatDateTime(now);
     }
 
     // Set default endDateTime to today at 10:00 PM if not provided

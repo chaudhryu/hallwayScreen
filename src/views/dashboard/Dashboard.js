@@ -1,3 +1,4 @@
+// Dashboard.js
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -8,7 +9,6 @@ import {
   CCardText,
   CHeader,
   CListGroup,
-  CListGroupItem,
 } from '@coreui/react';
 // Import images
 import bryan from 'src/assets/images/bryan2.jpg';
@@ -16,33 +16,36 @@ import pat from 'src/assets/images/pat.jpg';
 import medic from 'src/assets/images/medic.jpg';
 import tee from 'src/assets/images/tee.jpg';
 import metroLogo from 'src/assets/images/metroITSLogo.png';
-import map from 'src/assets/images/redoneMap.png';
+import map from 'src/assets/images/crazyNewMap.png';
 
 const Dashboard = () => {
   // Array of room IDs and their names
   const rooms = [
     { id: 94, name: 'East Wing (05-76)' },
-   // { id: 180, name: 'Huddle A (05-44)' },
-    //{ id: 163, name: 'Huddle B (05-67)' },
-    //{ id: 1609, name: 'Huddle C (05-98)' },
-    //{ id: 2189, name: 'Huddle Room D' },
+    // { id: 180, name: 'Huddle A (05-44)' },
+    // { id: 163, name: 'Huddle B (05-67)' },
+    // { id: 1609, name: 'Huddle C (05-98)' },
+    // { id: 2189, name: 'Huddle Room D' },
     { id: 2194, name: 'Innovation Lab (05-92)' },
     { id: 139, name: 'Valencia (05-43)' },
     { id: 140, name: 'West Wing (05-20)' },
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);//keeps track of current slide
-  const [bookings, setBookings] = useState({}); //State to store the bookings for each room, keyed by room ID
+  const [currentIndex, setCurrentIndex] = useState(0); // Keeps track of current slide
+  const [bookings, setBookings] = useState({}); // State to store the bookings for each room, keyed by room ID
+  const [aggregatedBookings, setAggregatedBookings] = useState([]); // State to store aggregated bookings
 
   // Fetches bookings from each room from the server
   const fetchBookings = async () => {
     try {
-      const startDateTime = new Date().toISOString().split('T')[0] + ' 00:00:00'; //beginning of the day
-      const endDateTime = new Date().toISOString().split('T')[0] + ' 23:59:59';// end of the day
+      const startDateTime =
+        new Date().toISOString().split('T')[0] + ' 00:00:00'; // Beginning of the day
+      const endDateTime =
+        new Date().toISOString().split('T')[0] + ' 23:59:59'; // End of the day
 
-      const allBookings = {}; //object to store all the data.
+      const allBookings = {}; // Object to store all the data
 
-      for (const room of rooms) { //Iterates over each room in the rooms array.
+      for (const room of rooms) {
         const roomId = room.id;
 
         // Make a request to backend server
@@ -60,23 +63,37 @@ const Dashboard = () => {
         }
 
         const data = await response.json();
-        const roomBookings = data.bookings || data; // Extracts the bookings from data object.
+        const roomBookings = data.bookings || data;
 
-        if (roomBookings && roomBookings.length > 0) { //Checks if there are bookings for the room
-          allBookings[roomId] = roomBookings; //stores the bookings for the current room in allBookings object. Uses roomId as the key and roomBookings as the value
+        if (roomBookings && roomBookings.length > 0) {
+          // Add room name to each booking for identification
+          roomBookings.forEach((booking) => {
+            booking.roomName = room.name;
+          });
+
+          allBookings[roomId] = roomBookings;
           console.log(`Bookings for room ${roomId}:`, roomBookings);
         } else {
           console.log(`No bookings for room ${roomId}`);
         }
       }
 
-      setBookings(allBookings); //Update Bookings object
+      setBookings(allBookings); // Update bookings state
+
+      // Aggregate bookings into a single array
+      const aggregated = Object.values(allBookings).flat();
+
+      // Sort the aggregated bookings by start time
+      aggregated.sort((a, b) => new Date(a.timeFrom) - new Date(b.timeFrom));
+
+      // Update the aggregated bookings state
+      setAggregatedBookings(aggregated);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     }
   };
 
-  // Fetch bookings initially and refresh every seven minutes
+  // Fetch bookings initially and refresh every hour
   useEffect(() => {
     // Fetch bookings initially
     fetchBookings();
@@ -100,20 +117,16 @@ const Dashboard = () => {
     };
   }, []);
 
-
-  // Define the slides array, including a slide for each room's bookings
-  // Only include rooms that have bookings
+  // Define the slides array, including a slide for aggregated bookings
   const bookingSlides = rooms
     .filter((room) => bookings[room.id] && bookings[room.id].length > 0)
     .map((room) => ({
       type: 'bookings',
       roomId: room.id,
-      title: `Room Bookings for ${room.name}`,
+      title: `Meeting Time for ${room.name}`,
     }));
 
   const slides = [
-
-
     {
       src: bryan,
       title: 'Bryan M. Sastokas, Chief Information Technology Officer (CITO)',
@@ -134,24 +147,29 @@ const Dashboard = () => {
       title: 'Vincent Tee, EO Enterprise Architecture & Technology Integration',
       text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management.',
     },
-    // Include the booking slides
-    ...bookingSlides,
-    // Add the map as its own slide
+    // Aggregated bookings slide
     {
-      src: map,
-      type: 'image',
-      text: 'Map',
+      type: 'aggregatedBookings',
+      title: 'All Meeting Times',
     },
+    // Include the booking slides for individual rooms
+    // ...bookingSlides,
+    // Remove the map slide since we're displaying it statically
+    // {
+    //   src: map,
+    //   type: 'image',
+    //   text: 'Map',
+    // },
   ];
 
   useEffect(() => {
     const currentSlide = slides[currentIndex];
     let delay = 8000; // Default delay
 
-    if (currentSlide.type === 'bookings') {
-      delay = 15000; // 15 seconds for bookings slides
-    } else if (currentSlide.text === 'Map') {
-      delay = 20000; // 20 seconds for map slide
+    if (currentSlide.type === 'aggregatedBookings') {
+      delay = 20000; // 20 seconds for aggregated bookings slide
+    } else if (currentSlide.type === 'bookings') {
+      delay = 15000; // 15 seconds for individual bookings slides
     }
 
     const timeout = setTimeout(() => {
@@ -169,7 +187,7 @@ const Dashboard = () => {
           position: relative;
           width: 100%;
           margin: 0 auto;
-          height: 100vh;
+          height: 50vh; /* Adjusted to make room for the static map and title */
         }
 
         .carousel-content {
@@ -236,7 +254,7 @@ const Dashboard = () => {
         }
 
         .bookings-list li {
-          margin-bottom: 10px;
+          margin-bottom: 20px;
         }
 
         /* Logo Positioning */
@@ -245,19 +263,103 @@ const Dashboard = () => {
           bottom: 20px;
           left: 20px;
         }
+
+        /* Static Map Container */
+        .static-map-container {
+          width: 100%;
+          height: 35vh; /* Adjusted to make room for the carousel and title */
+          background-color: white;
+        }
+
+        .static-map-image {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        /* Title Container */
+        .title-container {
+          text-align: center;
+          background-color: white;
+        }
+
+        .title-text {
+          font-size: 3rem;
+          font-weight: bold;
+          margin: 0;
+        }
       `}</style>
 
+      {/* Title Component */}
+      <div className="title-container">
+        <h1 className="title-text">Welcome to the 5th Floor</h1>
+      </div>
+
+      {/* Static Map Image */}
+      <div className="static-map-container">
+        <img src={map} alt="Map" className="static-map-image" />
+      </div>
+
+      {/* Carousel */}
       <div className="carousel-container">
         <div className="carousel-content">
-          {slides[currentIndex].type === 'bookings' ? (
+          {slides[currentIndex].type === 'aggregatedBookings' ? (
+            // Render the aggregated bookings slide
+            <CCard className="carousel-card pt-4">
+              <CCardBody>
+                <CHeader style={{ marginBottom: '10px' }}>
+                  <CCardTitle
+                    className="text-center"
+                    style={{ fontSize: '2.8rem', fontWeight: 'bold' }}
+                  >
+                    {slides[currentIndex].title}
+                  </CCardTitle>
+                </CHeader>
+                <ul className="bookings-list">
+                  {aggregatedBookings.map((booking) => {
+                    const startTime = new Date(booking.timeFrom);
+                    const endTime = new Date(booking.timeTo);
+
+                    // Function to format the time to 'h:mm a.m./p.m.'
+                    const formatTime = (date) => {
+                      let hours = date.getHours();
+                      const minutes = date.getMinutes();
+                      const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+                      hours = hours % 12;
+                      hours = hours ? hours : 12; // the hour '0' should be '12'
+                      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+                      return `${hours}:${minutesStr} ${ampm}`;
+                    };
+
+                    return (
+                      <li key={booking.bookingID}>
+                        <strong>
+                          {booking.meetingTitle} - {booking.creatorName}
+                        </strong>
+                        <br />
+                        {formatTime(startTime)} - {formatTime(endTime)}
+                        <br />
+                        <em>{booking.roomName}</em>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <img
+                  src={metroLogo}
+                  alt="Metro Logo"
+                  className="logo-bottom-left"
+                  style={{ height: '70px' }}
+                />
+              </CCardBody>
+            </CCard>
+          ) : slides[currentIndex].type === 'bookings' ? (
             // Render the bookings slide for the specific room
             <CCard className="carousel-card pt-4">
               <CCardBody>
-                <CHeader 
-                  style={{ marginBottom:'10px' }}>
+                <CHeader style={{ marginBottom: '10px' }}>
                   <CCardTitle
                     className="text-center"
-                    style={{ fontSize: '2.8rem', fontWeight: 'bold', }}
+                    style={{ fontSize: '2.8rem', fontWeight: 'bold' }}
                   >
                     {slides[currentIndex].title}
                   </CCardTitle>
@@ -279,14 +381,13 @@ const Dashboard = () => {
                     };
 
                     return (
-                      <div>
-                        <CListGroup>
-                          <li key={booking.bookingID}>
-                            <strong>{booking.meetingTitle} - {booking.creatorName}</strong> <br />
-                            {formatTime(startTime)} - {formatTime(endTime)}
-                          </li>
-                        </CListGroup>
-                      </div>
+                      <li key={booking.bookingID}>
+                        <strong>
+                          {booking.meetingTitle} - {booking.creatorName}
+                        </strong>
+                        <br />
+                        {formatTime(startTime)} - {formatTime(endTime)}
+                      </li>
                     );
                   })}
                 </ul>
@@ -294,29 +395,10 @@ const Dashboard = () => {
                   src={metroLogo}
                   alt="Metro Logo"
                   className="logo-bottom-left"
-                  style={{ height: '80px' }}
+                  style={{ height: '70px' }}
                 />
               </CCardBody>
             </CCard>
-          ) : slides[currentIndex].text === 'Map' ? (
-            <div>
-              <CHeader style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                <CCardTitle
-                  className="text-center"
-                  style={{ fontSize: '2.8rem', fontWeight: 'bold', alignItems: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}
-                >
-                  Map of 5th Floor
-                </CCardTitle>
-              </CHeader>
-              <img
-                src={slides[currentIndex].src}
-                alt="Map"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                }}
-              />
-            </div>
           ) : slides[currentIndex].title ? (
             // Render the regular slides
             <CCard className="carousel-card pt-4">
@@ -334,14 +416,15 @@ const Dashboard = () => {
                 </CCardTitle>
                 <CCardText
                   className="text-center"
-                  style={{ fontSize: '2.1rem' }}
+                  style={{ fontSize: '2.1rem', marginBottom: '70px' }}
                 >
                   {slides[currentIndex].text}
                 </CCardText>
                 <img
                   src={metroLogo}
                   alt="Metro Logo"
-                  style={{ height: '100px', marginRight: '8px', bottom: 0 }}
+                  className="logo-bottom-left"
+                  style={{ height: '70px' }}
                 />
               </CCardBody>
             </CCard>
@@ -362,8 +445,9 @@ const Dashboard = () => {
           {slides.map((_, index) => (
             <span
               key={index}
-              className={`indicator-dot ${currentIndex === index ? 'active' : ''
-                }`}
+              className={`indicator-dot ${
+                currentIndex === index ? 'active' : ''
+              }`}
               onClick={() => setCurrentIndex(index)}
               aria-current={currentIndex === index ? 'true' : 'false'}
               aria-label={`Slide ${index + 1}`}
