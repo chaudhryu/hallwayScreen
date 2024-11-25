@@ -38,16 +38,30 @@ const Dashboard = () => {
   // Fetches bookings from each room from the server
   const fetchBookings = async () => {
     try {
-      const startDateTime =
-        new Date().toISOString().split('T')[0] + ' 00:00:00'; // Beginning of the day
-      const endDateTime =
-        new Date().toISOString().split('T')[0] + ' 23:59:59'; // End of the day
-
+      // Helper function to format date and time
+      const formatDateTime = (date) => {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based
+        const day = ('0' + date.getDate()).slice(-2);
+        const hours = ('0' + date.getHours()).slice(-2);
+        const minutes = ('0' + date.getMinutes()).slice(-2);
+        const seconds = ('0' + date.getSeconds()).slice(-2);
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      };
+  
+      // Set startDateTime to the current local time
+      const startDateTime = formatDateTime(new Date());
+  
+      // Set endDateTime to the end of the day (11:59:59 PM)
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      const endDateTime = formatDateTime(endOfDay);
+  
       const allBookings = {}; // Object to store all the data
-
+  
       for (const room of rooms) {
         const roomId = room.id;
-
+  
         // Make a request to backend server
         const response = await fetch(
           `http://localhost:5001/api/bookings?startDateTime=${encodeURIComponent(
@@ -56,42 +70,43 @@ const Dashboard = () => {
             endDateTime
           )}&roomId=${encodeURIComponent(roomId)}`
         );
-
+  
         if (!response.ok) {
           console.error(`Network response was not ok for room ${roomId}`);
           continue; // Skip to next room
         }
-
+  
         const data = await response.json();
         const roomBookings = data.bookings || data;
-
+  
         if (roomBookings && roomBookings.length > 0) {
           // Add room name to each booking for identification
           roomBookings.forEach((booking) => {
             booking.roomName = room.name;
           });
-
+  
           allBookings[roomId] = roomBookings;
           console.log(`Bookings for room ${roomId}:`, roomBookings);
         } else {
           console.log(`No bookings for room ${roomId}`);
         }
       }
-
+  
       setBookings(allBookings); // Update bookings state
-
+  
       // Aggregate bookings into a single array
       const aggregated = Object.values(allBookings).flat();
-
+  
       // Sort the aggregated bookings by start time
       aggregated.sort((a, b) => new Date(a.timeFrom) - new Date(b.timeFrom));
-
+  
       // Update the aggregated bookings state
       setAggregatedBookings(aggregated);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     }
   };
+  
 
   // Fetch bookings initially and refresh every hour
   useEffect(() => {
@@ -130,22 +145,22 @@ const Dashboard = () => {
     {
       src: bryan,
       title: 'Bryan M. Sastokas, Chief Information Technology Officer (CITO)',
-      text: "Deputy Chief, CITO, Bryan M. Sastokas leads Metro's ITS organization and is dedicated to helping customers and business stakeholders address today’s increasingly complex software and hardware infrastructure challenges.",
+     // text: "Deputy Chief, CITO, Bryan M. Sastokas leads Metro's ITS organization and is dedicated to helping customers and business stakeholders address today’s increasingly complex software and hardware infrastructure challenges.",
     },
     {
       src: pat,
       title: 'Patrick Astredo, EO IT Business Applications',
-      text: 'The IT Business Applications group is comprised of Transit Applications, Business Application Services, and Digital Strategy & Innovation, & Web App. Patrick encompasses the values of Metro as proven by his continued commitment to excellence.',
+     // text: 'The IT Business Applications group is comprised of Transit Applications, Business Application Services, and Digital Strategy & Innovation, & Web App. Patrick encompasses the values of Metro as proven by his continued commitment to excellence.',
     },
     {
       src: medic,
       title: 'Medik Ghazikhanian, EO Center of Excellence (CoE)',
-      text: 'The ITS CoE is composed of Governance, Program Management Office (PMO), ITS Training, ITS Communications, Geospatial Business Intelligence (GBI), and ITS Budget and Admin. This department is headed by Medik Ghazikhanian.',
+    //  text: 'The ITS CoE is composed of Governance, Program Management Office (PMO), ITS Training, ITS Communications, Geospatial Business Intelligence (GBI), and ITS Budget and Admin. This department is headed by Medik Ghazikhanian.',
     },
     {
       src: tee,
       title: 'Vincent Tee, EO Enterprise Architecture & Technology Integration',
-      text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management.',
+    //  text: 'The Enterprise Architecture & Tech Integration group comprises IT Capacity Management, Network Engineering, IT Service Continuity - Database and Storage Management, Configuration & Data Center Management.',
     },
     // Aggregated bookings slide
     {
@@ -153,7 +168,7 @@ const Dashboard = () => {
       title: 'All Meeting Times',
     },
     // Include the booking slides for individual rooms
-    // ...bookingSlides,
+    ...bookingSlides,
     // Remove the map slide since we're displaying it statically
     // {
     //   src: map,
@@ -315,35 +330,42 @@ const Dashboard = () => {
                     {slides[currentIndex].title}
                   </CCardTitle>
                 </CHeader>
-                <ul className="bookings-list">
-                  {aggregatedBookings.map((booking) => {
-                    const startTime = new Date(booking.timeFrom);
-                    const endTime = new Date(booking.timeTo);
+                {aggregatedBookings.length > 0 ? (
+                  <ul className="bookings-list">
+                    {aggregatedBookings.map((booking) => {
+                      const startTime = new Date(booking.timeFrom);
+                      const endTime = new Date(booking.timeTo);
 
-                    // Function to format the time to 'h:mm a.m./p.m.'
-                    const formatTime = (date) => {
-                      let hours = date.getHours();
-                      const minutes = date.getMinutes();
-                      const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
-                      hours = hours % 12;
-                      hours = hours ? hours : 12; // the hour '0' should be '12'
-                      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-                      return `${hours}:${minutesStr} ${ampm}`;
-                    };
+                      // Function to format the time to 'h:mm a.m./p.m.'
+                      const formatTime = (date) => {
+                        let hours = date.getHours();
+                        const minutes = date.getMinutes();
+                        const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+                        hours = hours % 12;
+                        hours = hours ? hours : 12; // the hour '0' should be '12'
+                        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+                        return `${hours}:${minutesStr} ${ampm}`;
+                      };
 
-                    return (
-                      <li key={booking.bookingID}>
-                        <strong>
-                          {booking.meetingTitle} - {booking.creatorName}
-                        </strong>
-                        <br />
-                        {formatTime(startTime)} - {formatTime(endTime)}
-                        <br />
-                        <em>{booking.roomName}</em>
-                      </li>
-                    );
-                  })}
-                </ul>
+                      return (
+                        <li key={booking.bookingID}>
+                          <strong>
+                            {booking.meetingTitle} - {booking.creatorName}
+                          </strong>
+                          <br />
+                          {formatTime(startTime)} - {formatTime(endTime)}
+                          <br />
+                          <em>{booking.roomName}</em>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  // Display the no meetings message when there are no bookings
+                  <p className="bookings-list" style={{ fontSize: '2rem', textAlign: 'center' }}>
+                    No meetings booked in any rooms currently.
+                  </p>
+                )}
                 <img
                   src={metroLogo}
                   alt="Metro Logo"
