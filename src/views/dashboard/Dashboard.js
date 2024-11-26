@@ -16,7 +16,7 @@ import pat from 'src/assets/images/pat.jpg';
 import medic from 'src/assets/images/medic.jpg';
 import tee from 'src/assets/images/tee.jpg';
 import metroLogo from 'src/assets/images/metroITSLogo.png';
-import map from 'src/assets/images/crazyNewMap.png';
+import map from 'src/assets/images/crazyNewMap2.png';
 
 const Dashboard = () => {
   // Array of room IDs and their names
