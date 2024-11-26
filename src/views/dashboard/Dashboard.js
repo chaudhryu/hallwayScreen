@@ -282,7 +282,7 @@ const Dashboard = () => {
         /* Static Map Container */
         .static-map-container {
           width: 100%;
-          height: 50vh; /* Adjusted to make room for the carousel and title */
+          height: 45vh; /* Adjusted to make room for the carousel and title */
           background-color: white;
         }
 
@@ -458,8 +458,7 @@ const Dashboard = () => {
               alt="Slide"
               style={{
                 width: '100%',
-                height: '100vh',
-              }}
+               }}
             />
           )}
         </div>
