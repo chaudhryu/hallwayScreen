@@ -168,7 +168,7 @@ const Dashboard = () => {
       title: 'All Meeting Times',
     },
     // Include the booking slides for individual rooms
-    ...bookingSlides,
+    //...bookingSlides,
     // Remove the map slide since we're displaying it statically
     // {
     //   src: map,
