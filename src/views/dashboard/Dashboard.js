@@ -179,10 +179,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     const currentSlide = slides[currentIndex];
-    let delay = 8000; // Default delay
+    let delay = 7000; // Default delay
 
     if (currentSlide.type === 'aggregatedBookings') {
-      delay = 20000; // 20 seconds for aggregated bookings slide
+      delay = 55000; // 20 seconds for aggregated bookings slide
     } else if (currentSlide.type === 'bookings') {
       delay = 15000; // 15 seconds for individual bookings slides
     }
@@ -282,7 +282,7 @@ const Dashboard = () => {
         /* Static Map Container */
         .static-map-container {
           width: 100%;
-          height: 35vh; /* Adjusted to make room for the carousel and title */
+          height: 50vh; /* Adjusted to make room for the carousel and title */
           background-color: white;
         }
 
@@ -306,6 +306,7 @@ const Dashboard = () => {
       `}</style>
 
       {/* Title Component */}
+      <CCard>
       <div className="title-container">
         <h1 className="title-text">Welcome to the 5th Floor</h1>
       </div>
@@ -314,7 +315,7 @@ const Dashboard = () => {
       <div className="static-map-container">
         <img src={map} alt="Map" className="static-map-image" />
       </div>
-
+      </CCard>
       {/* Carousel */}
       <div className="carousel-container">
         <div className="carousel-content">
