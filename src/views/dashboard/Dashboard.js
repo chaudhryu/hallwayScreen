@@ -15,6 +15,72 @@ import tee from 'src/assets/images/tee.jpg';
 import metroLogo from 'src/assets/images/metroITSLogo.png';
 import map from 'src/assets/images/crazyNewMap2.png';
 import focusedForward from 'src/assets/images/focusedForward.png';
+import { useRef } from 'react';
+
+const BookingsList = ({ bookings, showRoomName = false }) => {
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (list) {
+      let scrollPosition = 0;
+      let scrollDirection = 1; // 1 for down, -1 for up
+      const scrollStep = 0.5; // Adjust scroll speed (pixels per step)
+      const scrollInterval = 30; // Adjust interval (milliseconds)
+
+      const maxScrollTop = list.scrollHeight - list.clientHeight;
+
+      const scrollIntervalId = setInterval(() => {
+        if (scrollPosition >= maxScrollTop) {
+          scrollDirection = -1; // Change direction to up
+        } else if (scrollPosition <= 0) {
+          scrollDirection = 1; // Change direction to down
+        }
+        scrollPosition += scrollStep * scrollDirection;
+        list.scrollTop = scrollPosition;
+      }, scrollInterval);
+
+      return () => {
+        clearInterval(scrollIntervalId);
+      };
+    }
+  }, [bookings]);
+
+  // Function to format the time to 'h:mm a.m./p.m.'
+  const formatTime = (date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+    return `${hours}:${minutesStr} ${ampm}`;
+  };
+
+  return (
+    <ul className="bookings-list" ref={listRef}>
+      {bookings.map((booking) => {
+        const startTime = new Date(booking.timeFrom);
+        const endTime = new Date(booking.timeTo);
+        return (
+          <li key={booking.bookingID}>
+            <strong>
+              {booking.meetingTitle} - {booking.creatorName}
+            </strong>
+            <br />
+            {formatTime(startTime)} - {formatTime(endTime)}
+            {showRoomName && (
+              <>
+                <br />
+                <em>{booking.roomName}</em>
+              </>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+};
 
 const Dashboard = () => {
   // Array of room IDs and their names
@@ -238,15 +304,11 @@ const Dashboard = () => {
         .bookings-list {
           list-style-type: none;
           padding: 0;
-          font-size: 2rem;
-        }
-
-        .bookings-list.smaller-font {
-          font-size: 1.2rem;
-        }
-
-        .bookings-list.small-font {
           font-size: 1.5rem;
+          height: 300px; /* Set a fixed height */
+          overflow: hidden; /* Hide scrollbars */
+          margin-bottom: 70px;
+          position: relative;
         }
 
         .bookings-list li {
@@ -319,43 +381,10 @@ const Dashboard = () => {
                   </CCardTitle>
                 </CHeader>
                 {aggregatedBookings.length > 0 ? (
-                  <ul
-                    className={`bookings-list ${
-                      aggregatedBookings.length > 4
-                        ? 'smaller-font'
-                        : aggregatedBookings.length > 2
-                        ? 'small-font'
-                        : ''
-                    }`}
-                  >
-                    {aggregatedBookings.map((booking) => {
-                      const startTime = new Date(booking.timeFrom);
-                      const endTime = new Date(booking.timeTo);
-
-                      // Function to format the time to 'h:mm a.m./p.m.'
-                      const formatTime = (date) => {
-                        let hours = date.getHours();
-                        const minutes = date.getMinutes();
-                        const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
-                        hours = hours % 12;
-                        hours = hours ? hours : 12; // the hour '0' should be '12'
-                        const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-                        return `${hours}:${minutesStr} ${ampm}`;
-                      };
-
-                      return (
-                        <li key={booking.bookingID}>
-                          <strong>
-                            {booking.meetingTitle} - {booking.creatorName}
-                          </strong>
-                          <br />
-                          {formatTime(startTime)} - {formatTime(endTime)}
-                          <br />
-                          <em>{booking.roomName}</em>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <BookingsList
+                    bookings={aggregatedBookings}
+                    showRoomName={true}
+                  />
                 ) : (
                   // Display the no meetings message when there are no bookings
                   <p
@@ -391,41 +420,9 @@ const Dashboard = () => {
                     {slides[currentIndex].title}
                   </CCardTitle>
                 </CHeader>
-                <ul
-                  className={`bookings-list ${
-                    bookings[slides[currentIndex].roomId].length > 4
-                      ? 'smaller-font'
-                      : bookings[slides[currentIndex].roomId].length > 2
-                      ? 'small-font'
-                      : ''
-                  }`}
-                >
-                  {bookings[slides[currentIndex].roomId].map((booking) => {
-                    const startTime = new Date(booking.timeFrom);
-                    const endTime = new Date(booking.timeTo);
-
-                    // Function to format the time to 'h:mm a.m./p.m.'
-                    const formatTime = (date) => {
-                      let hours = date.getHours();
-                      const minutes = date.getMinutes();
-                      const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
-                      hours = hours % 12;
-                      hours = hours ? hours : 12; // the hour '0' should be '12'
-                      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
-                      return `${hours}:${minutesStr} ${ampm}`;
-                    };
-
-                    return (
-                      <li key={booking.bookingID}>
-                        <strong>
-                          {booking.meetingTitle} - {booking.creatorName}
-                        </strong>
-                        <br />
-                        {formatTime(startTime)} - {formatTime(endTime)}
-                      </li>
-                    );
-                  })}
-                </ul>
+                <BookingsList
+                  bookings={bookings[slides[currentIndex].roomId] || []}
+                />
                 <img
                   src={metroLogo}
                   alt="Metro Logo"
