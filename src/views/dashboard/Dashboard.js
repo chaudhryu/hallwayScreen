@@ -14,6 +14,7 @@ import medic from 'src/assets/images/medic.jpg';
 import tee from 'src/assets/images/tee.jpg';
 import metroLogo from 'src/assets/images/metroITSLogo.png';
 import map from 'src/assets/images/crazyNewMap2.png';
+import focusedForward from 'src/assets/images/focusedForward.png';
 
 const Dashboard = () => {
   // Array of room IDs and their names
@@ -125,14 +126,6 @@ const Dashboard = () => {
   }, []);
 
   // Define the slides array, including a slide for aggregated bookings
-  const bookingSlides = rooms
-    .filter((room) => bookings[room.id] && bookings[room.id].length > 0)
-    .map((room) => ({
-      type: 'bookings',
-      roomId: room.id,
-      title: `Meeting Time for ${room.name}`,
-    }));
-
   const slides = [
     {
       src: bryan,
@@ -248,6 +241,10 @@ const Dashboard = () => {
           font-size: 2rem;
         }
 
+        .bookings-list.smaller-font {
+          font-size: 1.2rem;
+        }
+
         .bookings-list.small-font {
           font-size: 1.5rem;
         }
@@ -261,6 +258,12 @@ const Dashboard = () => {
           position: absolute;
           bottom: 20px;
           left: 20px;
+        }
+
+        .logo-bottom-right {
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
         }
 
         /* Static Map Container */
@@ -318,7 +321,11 @@ const Dashboard = () => {
                 {aggregatedBookings.length > 0 ? (
                   <ul
                     className={`bookings-list ${
-                      aggregatedBookings.length > 2 ? 'small-font' : ''
+                      aggregatedBookings.length > 4
+                        ? 'smaller-font'
+                        : aggregatedBookings.length > 2
+                        ? 'small-font'
+                        : ''
                     }`}
                   >
                     {aggregatedBookings.map((booking) => {
@@ -364,6 +371,12 @@ const Dashboard = () => {
                   className="logo-bottom-left"
                   style={{ height: '70px' }}
                 />
+                <img
+                  src={focusedForward}
+                  alt="Focused Forward Logo"
+                  className="logo-bottom-right"
+                  style={{ height: '70px' }}
+                />
               </CCardBody>
             </CCard>
           ) : slides[currentIndex].type === 'bookings' ? (
@@ -380,7 +393,9 @@ const Dashboard = () => {
                 </CHeader>
                 <ul
                   className={`bookings-list ${
-                    bookings[slides[currentIndex].roomId].length > 2
+                    bookings[slides[currentIndex].roomId].length > 4
+                      ? 'smaller-font'
+                      : bookings[slides[currentIndex].roomId].length > 2
                       ? 'small-font'
                       : ''
                   }`}
@@ -417,6 +432,12 @@ const Dashboard = () => {
                   className="logo-bottom-left"
                   style={{ height: '70px' }}
                 />
+                <img
+                  src={focusedForward}
+                  alt="Focused Forward Logo"
+                  className="logo-bottom-right"
+                  style={{ height: '70px' }}
+                />
               </CCardBody>
             </CCard>
           ) : slides[currentIndex].title ? (
@@ -444,6 +465,12 @@ const Dashboard = () => {
                   src={metroLogo}
                   alt="Metro Logo"
                   className="logo-bottom-left"
+                  style={{ height: '70px' }}
+                />
+                <img
+                  src={focusedForward}
+                  alt="Focused Forward Logo"
+                  className="logo-bottom-right"
                   style={{ height: '70px' }}
                 />
               </CCardBody>
