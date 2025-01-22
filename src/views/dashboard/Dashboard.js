@@ -11,6 +11,7 @@ import {
 import bryan from 'src/assets/images/bryan2.jpg';
 import pat from 'src/assets/images/pat.jpg';
 import medic from 'src/assets/images/medic.jpg';
+import medic2 from 'src/assets/images/medik2.png';
 import tee from 'src/assets/images/tee.jpg';
 import metroLogo from 'src/assets/images/metroITSLogo.png';
 import map from 'src/assets/images/crazyNewMap2.png';
@@ -202,7 +203,7 @@ const Dashboard = () => {
       title: 'Patrick Astredo, EO IT Business Applications',
     },
     {
-      src: medic,
+      src: medic2,
       title: 'Medik Ghazikhanian, EO Center of Excellence (CoE)',
     },
     {
