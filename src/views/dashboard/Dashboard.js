@@ -125,7 +125,7 @@ const Dashboard = () => {
 
         // Make a request to backend server
         const response = await fetch(
-          `http://localhost:5001/api/bookings?startDateTime=${encodeURIComponent(
+          `https://hallway-server-cwdd.vercel.app/api/bookings?startDateTime=${encodeURIComponent(
             startDateTime
           )}&endDateTime=${encodeURIComponent(
             endDateTime
